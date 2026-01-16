@@ -1,3 +1,4 @@
+using AutoMapper;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using WebApi;
@@ -12,8 +13,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
-
 builder.Services.AddDbContext<ApplicationDataContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("ApplicationDataContext"),
@@ -24,6 +23,7 @@ builder.Services.AddAutoMapper(typeof(ApplicationMappingProfile).Assembly);
 
 builder.Services.AddDependencies();
 
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
