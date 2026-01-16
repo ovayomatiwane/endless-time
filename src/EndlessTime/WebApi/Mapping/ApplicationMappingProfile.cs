@@ -12,6 +12,8 @@ namespace WebApi.Mapping
             //One way mappings
             CreateMap<Consultant, ConsultantDto>();
             CreateMap<User, UserDto>();
+            CreateMap<Role, RoleDto>();
+            CreateMap<Rate, RateDto>();
 
             //Two-way mappings
 

@@ -32,6 +32,14 @@ namespace WebApi
             {
                 await WriteError(context, HttpStatusCode.InternalServerError, ex.Message);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                await WriteError(context, HttpStatusCode.Unauthorized, ex.Message);
+            }
+            catch (EntityAlreadyExistsException ex)
+            {
+                await WriteError(context, HttpStatusCode.Conflict, ex.Message);
+            }
             catch (Exception ex)
             {
                 await WriteError(context, HttpStatusCode.InternalServerError,
