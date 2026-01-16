@@ -38,3 +38,7 @@ Domain (entities + DbContext)
 
 Common (DTOs, Enums, Utilities)
 ├─ references → nothing
+
+Migrations: Open Package Manager Console
+-add-migration InitialCreate -Project Domain -StartupProject WebApi
+-update-database -Project Domain -StartupProject WebApi
