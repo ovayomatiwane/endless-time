@@ -4,6 +4,6 @@ namespace Services.Interfaces
 {
     public interface IConsultantsService
     {
-        Task<IEnumerable<ConsultantDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<List<ConsultantDto>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

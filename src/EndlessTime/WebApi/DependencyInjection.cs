@@ -1,5 +1,6 @@
 ﻿using Services;
 using Services.Interfaces;
+using Services.Security;
 
 namespace WebApi
 {
@@ -8,6 +9,11 @@ namespace WebApi
         public static void AddDependencies(this IServiceCollection services)
         {
             services.AddScoped<IConsultantsService, ConsultantsService>();
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         }
     }
 }

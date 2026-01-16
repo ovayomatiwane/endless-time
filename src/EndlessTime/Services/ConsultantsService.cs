@@ -10,7 +10,7 @@ namespace Services
         IMapper mapper,
         ApplicationDataContext databaseContext) : IConsultantsService
     {
-        public async Task<IEnumerable<ConsultantDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<ConsultantDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var result = await databaseContext.Consultants
                                               .ToListAsync(cancellationToken);
