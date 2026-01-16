@@ -42,3 +42,44 @@ Common (DTOs, Enums, Utilities)
 Migrations: Open Package Manager Console
 -add-migration InitialCreate -Project Domain -StartupProject WebApi
 -update-database -Project Domain -StartupProject WebApi
+
+Flow
++------------------+
+| Client | <-- Frontend / Postman / Mobile app
++------------------+
+|
+v
++------------------+
+| API | <-- WebApi Project
+|------------------|
+| Controllers | <-- AuthController, UsersController
+| Middleware | <-- ExceptionHandlingMiddleware
+| Swagger / OpenAPI|
++------------------+
+|
+v
++------------------+
+| Services | <-- Services Project
+|------------------|
+| AuthService | <-- Login, registration, JWT creation
+| UsersService | <-- CRUD, business rules
+| PasswordService | <-- Wraps IPasswordHasher
++------------------+
+|
+v
++------------------+
+| Common | <-- Common Project
+|------------------|
+| DTOs | <-- LoginRequestDto, AuthResponseDto
+| Interfaces | <-- IPasswordHasher
+| ApiResponse<T> | <-- Standard API responses
+| Exceptions | <-- UnauthorizedException, NotFoundException
++------------------+
+^
+|
++------------------+
+| Domain | <-- Domain Project
+|------------------|
+| Entities | <-- User, Post, etc.
+| ApplicationDataContext | <-- EF DbContext
++------------------+
