@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain;
 using Common.Dtos;
 using Domain.Entities;
 
@@ -14,6 +13,7 @@ namespace WebApi.Mapping
             CreateMap<User, UserDto>();
             CreateMap<Role, RoleDto>();
             CreateMap<Rate, RateDto>();
+            CreateMap<ConsultantRole, ConsultantRoleDto>();
 
             //Two-way mappings
 

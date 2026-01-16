@@ -1,7 +1,9 @@
 ﻿using Common.Dtos;
+using Common.Dtos.Commands;
 using Common.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using Services.Interfaces;
 
 namespace WebApi.Controllers
@@ -17,6 +19,14 @@ namespace WebApi.Controllers
             var consultants = await consultantsService.GetAllAsync();
 
             return Ok(ApiResponse<List<ConsultantDto>>.Ok(consultants));
+        }
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] CreateConsultantDto createConsultant)
+        {
+            var rate = await consultantsService.CreateConsultantAsync(createConsultant);
+
+            return Ok(ApiResponse<ConsultantDto>.Ok(rate));
         }
     }
 }
