@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Common.Dtos;
 
-namespace Services.interfaces
+namespace Services.Interfaces
 {
     public interface IConsultantsService
     {
+        Task<IEnumerable<ConsultantDto>> GetAll(CancellationToken cancellationToken = default);
     }
 }

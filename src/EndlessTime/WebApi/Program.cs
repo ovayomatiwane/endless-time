@@ -1,6 +1,7 @@
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using WebApi;
+using WebApi.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<ApplicationDataContext>(options =>
         builder.Configuration.GetConnectionString("ApplicationDataContext"),
         b => b.MigrationsAssembly("EndlessTime.Domain"))
 );
+
+builder.Services.AddAutoMapper(typeof(ApplicationMappingProfile).Assembly);
 
 builder.Services.AddDependencies();
 
