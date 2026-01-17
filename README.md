@@ -23,7 +23,7 @@ Solution
 │ ├─ Mapping (AutoMapper profiles referencing Common DTOs)
 │ └─ Program.cs
 
-Project Referencing
+# Project Referencing
 WebApi (startup project)
 ├─ references → Services
 ├─ references → Common
@@ -39,11 +39,11 @@ Domain (entities + DbContext)
 Common (DTOs, Enums, Utilities)
 ├─ references → nothing
 
-Migrations: Open Package Manager Console
+# Migrations: Open Package Manager Console
 -add-migration InitialCreate -Project Domain -StartupProject WebApi
 -update-database -Project Domain -StartupProject WebApi
 
-Flow
+# Flow
 +------------------+
 | Client | <-- Frontend / Postman / Mobile app
 +------------------+
