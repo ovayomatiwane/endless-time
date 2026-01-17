@@ -40,6 +40,10 @@ namespace WebApi
             {
                 await WriteError(context, HttpStatusCode.Conflict, ex.Message);
             }
+            catch (NumericalValueOutOfAllowableBoundsException ex)
+            {
+                await WriteError(context, HttpStatusCode.Conflict, ex.Message);
+            }
             catch (Exception ex)
             {
                 await WriteError(context, HttpStatusCode.InternalServerError,

@@ -2,6 +2,7 @@
 using Common.Dtos;
 using Common.Dtos.Commands;
 using Common.Exceptions;
+using Common.Utils;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,44 @@ namespace Services
             return mapper.Map<List<ConsultantDto>>(result);
         }
 
+        public async Task<ConsultantDto> GetByIdAsync(Guid consultantId, CancellationToken cancellationToken = default)
+        {
+            var consultant = await databaseContext.Consultants
+                                                   .SingleOrDefaultAsync(x => x.Id == consultantId, cancellationToken);
+
+            if (consultant is null)
+            {
+                string message = $"Consultanr with Id: {consultantId} does not exist.";
+                throw new EntityNotFoundException(message);
+            }
+
+            return mapper.Map<ConsultantDto>(consultant);
+        }
+
+        public async Task<int> GetDayAssignedHoursAsync(Guid consultantId, CancellationToken cancellationToken = default)
+        {
+            var (dayStart, dayEnd) = DateUtils.GetUtcDayRange(DateTime.UtcNow);
+
+            var consultantAssignemts = await databaseContext.ConsultantAssignments
+                                                   .Where(x => x.ConsultantId == consultantId && x.CreatedDate >= dayStart && x.CreatedDate <= dayEnd)
+                                                   .ToListAsync(cancellationToken);
+
+            
+            if (consultantAssignemts is null)
+            {
+                return 0;
+            }
+
+            int assignedHours = 0;
+
+            foreach(var consultantAssignemt in consultantAssignemts)
+            {
+                assignedHours += consultantAssignemt.HoursAssigned;
+            }
+
+            return assignedHours;
+        }
+
         private void ValidateCreateConsultantDto(CreateConsultantDto createConsultant)
         {
             string message;
@@ -81,7 +120,6 @@ namespace Services
                 message = $"Invalid Email address provided. Email address cannot be null or empty.";
                 throw new RequiredNullOrEmptyStringException(message);
             }
-
         }
     }
 }
