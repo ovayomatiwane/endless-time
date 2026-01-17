@@ -14,6 +14,8 @@ namespace WebApi.Mapping
             CreateMap<Role, RoleDto>();
             CreateMap<Rate, RateDto>();
             CreateMap<ConsultantRole, ConsultantRoleDto>();
+            CreateMap<Assignment, AssignmentDto>();
+            CreateMap<ConsultantAssignment, ConsultantAssignmentDto>();
 
             //Two-way mappings
 

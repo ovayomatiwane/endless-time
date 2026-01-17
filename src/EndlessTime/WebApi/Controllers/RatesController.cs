@@ -25,5 +25,13 @@ namespace WebApi.Controllers
 
             return Ok(ApiResponse<RateDto>.Ok(rate));
         }
+
+        [HttpGet("Active")]
+        public async Task<IActionResult> GetActive()
+        {
+            var rate = await ratesService.GetActiveAsync();
+
+            return Ok(ApiResponse<List<RateDto>>.Ok(rate));
+        }
     }
 }

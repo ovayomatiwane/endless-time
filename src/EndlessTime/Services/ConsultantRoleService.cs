@@ -67,6 +67,17 @@ namespace Services
             return mapper.Map<ConsultantRoleDto>(updatedConsultantRole);
         }
 
+        public async Task<List<ConsultantRoleDto>> GetAllCurrentAsync(CancellationToken cancellationToken = default)
+        {
+            var consultantRoles = await databaseContext.ConsultantRoles
+                                                       .Include(x => x.Role)
+                                                       .Include(x => x.Consultant)
+                                                       .Where(x => x.IsCurrent)
+                                                       .ToListAsync(cancellationToken);
+
+            return mapper.Map<List<ConsultantRoleDto>>(consultantRoles);
+        }
+
         private void ValidateAssignRoleDto(AssignRoleDto assignRole)
         {
             string message;

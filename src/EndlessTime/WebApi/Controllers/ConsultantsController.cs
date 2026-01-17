@@ -1,9 +1,7 @@
 ﻿using Common.Dtos;
 using Common.Dtos.Commands;
 using Common.Responses;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 using Services.Interfaces;
 
 namespace WebApi.Controllers
@@ -12,7 +10,6 @@ namespace WebApi.Controllers
     [ApiController]
     public class ConsultantsController (IConsultantsService consultantsService) : ControllerBase
     {
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllConsultants()
         {

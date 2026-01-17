@@ -49,6 +49,29 @@ namespace Services
             return mapper.Map<RateDto>(newRate);
         }
 
+        public async Task<List<RateDto>> GetActiveAsync(CancellationToken cancellationToken = default)
+        {
+            var rates = await databaseContext.Rates
+                                             .Include(x => x.Role)
+                                             .Where(x => x.IsCurrent)
+                                             .ToListAsync(cancellationToken);
+
+            return mapper.Map<List<RateDto>>(rates);
+        }
+
+        public async Task<RateDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var rate = await databaseContext.Rates.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (rate is null)
+            {
+                string message = $"Role rate with Id: {id} does not exist";
+                throw new EntityNotFoundException(message);
+            }
+
+            return mapper.Map<RateDto>(rate);
+        }
+
         public async Task<List<RateDto>> GetRatesAsync(CancellationToken cancellationToken = default)
         {
             var rates = await databaseContext.Rates

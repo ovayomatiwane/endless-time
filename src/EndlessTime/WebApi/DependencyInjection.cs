@@ -13,6 +13,8 @@ namespace WebApi
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IRatesService, RatesService>();
             services.AddScoped<IConsultantRoleService, ConsultantRoleService>();
+            services.AddScoped<IAssignmentsService, AssignmentsService>();
+            services.AddScoped<IConsultantAssignmentService, ConsultantAssignmentService>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
 

@@ -6,5 +6,7 @@ namespace Services.Interfaces
     public interface IConsultantRoleService
     {
         Task<ConsultantRoleDto> AssignRoleAsync(AssignRoleDto assignRole, CancellationToken cancellationToken = default);
+
+        Task<List<ConsultantRoleDto>> GetAllCurrentAsync(CancellationToken cancellationToken = default);
     }
 }

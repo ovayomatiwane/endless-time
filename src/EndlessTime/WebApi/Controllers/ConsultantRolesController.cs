@@ -19,5 +19,13 @@ namespace WebApi.Controllers
 
             return Ok(ApiResponse<ConsultantRoleDto>.Ok(consultantRole));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var consultantRoles = await consultantRoleService.GetAllCurrentAsync();
+
+            return Ok(ApiResponse<List<ConsultantRoleDto>>.Ok(consultantRoles));
+        }
     }
 }
