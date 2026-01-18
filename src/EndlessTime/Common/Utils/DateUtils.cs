@@ -9,5 +9,15 @@
 
             return (start, end);
         }
+
+        public static DateTime StartOfDay(this DateTime dateTime)
+        {
+            return dateTime.Date;
+        }
+
+        public static DateTime EndOfDay(this DateTime dateTime)
+        {
+            return dateTime.StartOfDay().AddDays(1).AddTicks(-1);
+        }
     }
 }
