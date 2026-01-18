@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Common.Dtos;
 using Common.Dtos.Commands;
+using Common.Dtos.Responses;
 using Common.Exceptions;
+using Common.Utils;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -129,6 +132,148 @@ namespace Services
                                                              .ToListAsync(cancellationToken);
 
             return mapper.Map<List<ConsultantAssignmentDto>>(consultantAssignments);
+        }
+
+        public async Task<MoneyOwedDto> GetMoneyOwedAsync(MoneyOwedRequestDto request, CancellationToken cancellationToken = default)
+        {
+            ValidateMoneyOwedRequestDto(request);
+
+            var consultant = await databaseContext.Consultants.SingleOrDefaultAsync(x => x.Id == request.ConsultantId, cancellationToken);
+            if (consultant is null)
+            {
+                string message = $"Consultant with Id: {request.ConsultantId} not found";
+                throw new EntityNotFoundException(message);
+            }
+
+            DateTime dateStart = request.FromDate.StartOfDay();
+            DateTime dateEnd = request.ToDate.EndOfDay();
+
+
+
+            var consultantAssignments = await databaseContext.ConsultantAssignments
+                                                            .Include(x => x.Consultant)
+                                                            .Include(x => x.Rate)
+                                                            .Include(x => x.Assignment)
+                                                            .Where(x => x.ConsultantId == request.ConsultantId && x.CreatedDate >= dateStart && x.CreatedDate <= dateEnd)
+                                                            .ToListAsync(cancellationToken);
+
+            decimal totalValue = 0;
+            List<AssignmentOwedDto> assignmentsOwed = [];
+
+            foreach(var consultantAssignment in consultantAssignments)
+            {
+                var totalOwed = consultantAssignment.HoursCompleted * consultantAssignment.Rate.HourlyRate;
+                if (totalOwed > 0)
+                {
+                    totalValue += totalOwed;
+
+                    assignmentsOwed.Add(new()
+                    {
+                        AssignmentId = consultantAssignment.AssignmentId,
+                        AssignmentName = consultantAssignment.Assignment.Name,
+                        AmountOwed = totalOwed,
+                    });
+                }
+            }
+
+            var consultantAssign = consultantAssignments.FirstOrDefault();
+
+            if (consultantAssign != null)
+            {
+                return new()
+                {
+                    FullName = $"{consultantAssign.Consultant.FirstName} {consultantAssign.Consultant.LastName}",
+                    EmailAddress = consultantAssign.Consultant.EmailAddress ?? string.Empty,
+                    TotalOwed = totalValue,
+                    FromDate = dateStart,
+                    ToDate = dateEnd,
+                    AssignmentsOwed = assignmentsOwed
+                };
+            };
+
+            return new()
+            {
+                FullName = $"{consultant.FirstName} {consultant.LastName}",
+                EmailAddress = consultant.EmailAddress ?? string.Empty,
+                TotalOwed = totalValue,
+                FromDate = dateStart,
+                ToDate = dateEnd,
+                AssignmentsOwed = assignmentsOwed
+            };
+        }
+
+        public async Task<ConsultantAssignmentDto> CompleteHoursAsync(CompleteHoursDto completeRequest, CancellationToken cancellationToken = default)
+        {
+            ValidateCompleteHourstDto(completeRequest);
+
+            DateTime timeNow = DateTime.UtcNow;
+
+            string message;
+
+            var consultantAssignment = await databaseContext.ConsultantAssignments
+                                                            .Include(x => x.Consultant)
+                                                            .Include(x => x.Rate)
+                                                                .ThenInclude(x => x.Role)
+                                                            .Include(x => x.Assignment)
+                                                            .SingleOrDefaultAsync(x => x.Id == completeRequest.ConsultantAssignmentId,cancellationToken);
+
+            if (consultantAssignment is null)
+            {
+                message = $"Assignment with id {completeRequest.ConsultantAssignmentId} does not exist.";
+                throw new EntityNotFoundException(message);
+            }
+
+            if (consultantAssignment.HoursCompleted >= completeRequest.HoursCompleted)
+            {
+                message = $"Number of hours already completed ({consultantAssignment.HoursCompleted}) cannot be greater or equal to number of hours to be completed ({completeRequest.HoursCompleted}). Remaining: {consultantAssignment.HoursAssigned - consultantAssignment.HoursCompleted}";
+                throw new NumericalValueOutOfAllowableBoundsException(message);
+            }
+
+            if (consultantAssignment.HoursAssigned < completeRequest.HoursCompleted)
+            {
+                message = $"Number of hours assigned ({consultantAssignment.HoursAssigned}) cannot be less than number of hours to be completed ({completeRequest.HoursCompleted}). Remaining: {consultantAssignment.HoursAssigned - consultantAssignment.HoursCompleted}";
+                throw new NumericalValueOutOfAllowableBoundsException(message);
+            }
+
+            consultantAssignment.HoursCompleted = completeRequest.HoursCompleted;
+            databaseContext.Update(consultantAssignment);
+            await databaseContext.SaveChangesAsync(cancellationToken);
+
+            return mapper.Map<ConsultantAssignmentDto>(consultantAssignment);
+        }
+
+        private void ValidateMoneyOwedRequestDto(MoneyOwedRequestDto request)
+        {
+            string message;
+
+            if (request is null)
+            {
+                message = $"Null argument {nameof(request)}.";
+                throw new ArgumentNullException(nameof(request), message);
+            }
+
+            if (request.FromDate >= request.ToDate)
+            {
+                message = $"FromDate has to be before the ToDate";
+                throw new Exception(message);
+            }
+        }
+
+        private void ValidateCompleteHourstDto(CompleteHoursDto completeRequest)
+        {
+            string message;
+
+            if (completeRequest is null)
+            {
+                message = $"Null argument {nameof(completeRequest)}.";
+                throw new ArgumentNullException(nameof(completeRequest), message);
+            }
+
+            if (completeRequest.HoursCompleted <= 0)
+            {
+                message = $"Number of hours completed have to be positive and greater than zero.";
+                throw new NumericalValueOutOfAllowableBoundsException(message);
+            }
         }
 
         private void ValidateAssignTaskDto(AssignTaskDto assignTask)
