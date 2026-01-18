@@ -1,5 +1,6 @@
 ﻿using Common.Dtos;
 using Common.Dtos.Commands;
+using Common.Dtos.Responses;
 using Common.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
@@ -14,6 +15,22 @@ namespace WebApi.Controllers
         public async Task<IActionResult> AssignTask([FromBody] AssignTaskDto assignTask)
         {
             var result = await consultantAssignmentService.AssignTaskAsync(assignTask);
+
+            return Ok(ApiResponse<ConsultantAssignmentDto>.Ok(result));
+        }
+
+        [HttpPut("MoneyOwed")]
+        public async Task<IActionResult> GetMoneyOwed([FromBody] MoneyOwedRequestDto request)
+        {
+            var result = await consultantAssignmentService.GetMoneyOwedAsync(request);
+
+            return Ok(ApiResponse<MoneyOwedDto>.Ok(result));
+        }
+
+        [HttpPut("CompleteHours")]
+        public async Task<IActionResult> CompleteHours([FromBody] CompleteHoursDto request)
+        {
+            var result = await consultantAssignmentService.CompleteHoursAsync(request);
 
             return Ok(ApiResponse<ConsultantAssignmentDto>.Ok(result));
         }
